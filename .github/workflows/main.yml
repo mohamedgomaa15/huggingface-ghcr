@@ -1,0 +1,26 @@
+name: push on Azure container registry
+
+on:
+  push:
+    branches: [ "main" ]
+
+  workflow_dispatch:
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - uses: azure/docker-login@v1
+      with:
+        login-server: mohamed.azurecr.io
+        username: ${{ secrets.REGISTRY_USERNAME }}
+        password: ${{ secrets.REGISTRY_PASSWORD }}
+
+    - run: |
+        docker build . -t mohamed.azurecr.io/huggingface-fastapi:${{ github.sha }}
+        docker push mohamed.azurecr.io/huggingface-fastapi:${{ github.sha }}
